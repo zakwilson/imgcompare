@@ -66,7 +66,7 @@
   (let [width1 (.getWidth img1)
         height1 (.getHeight img1)
         width2 (.getWidth img2)
-        height2 (.getWidth img2)
+        height2 (.getHeight img2)
         height (min height1 height2)
         width (min width1 width2)]
     [(scale-image 0 img1 height width) (scale-image 0 img2 height width)]))
