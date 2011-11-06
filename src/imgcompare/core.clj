@@ -7,7 +7,7 @@
 (set! *warn-on-reflection* true)
 
 (defn int-sum
-  "(reduce unchecked-add ints) with type hinting"
+  "(apply + ints) with type hinting"
   ([ints]
      (let [f (first ints)]
        (if f
@@ -30,15 +30,17 @@
         img2-height (.getHeight img2)]
     (min size img1-width img2-width img1-height img2-height)))
 
-(defn scale-image [size ^BufferedImage img]
+(defn scale-image [size ^BufferedImage img & [height width]]
   (let [orig-width (.getWidth img)
         orig-height (.getHeight img)
-        width (min orig-width size)
-        height (min orig-height
-                    size
-                    (* (/ width orig-width) orig-height))
-        width (min width ;round and round we go!
-                   (* (/ height orig-height) orig-width))
+        new-width (min orig-width size)
+        height (or height
+                   (min orig-height
+                        size
+                        (* (/ new-width orig-width) orig-height)))
+        width (or width
+                  (min new-width ;round and round we go!
+                       (* (/ height orig-height) orig-width)))
         simg (BufferedImage. width height imgtype)
         g (.createGraphics simg)]
     (.drawImage g img 0 0 width height nil)
@@ -67,7 +69,7 @@
         height2 (.getWidth img2)
         height (min height1 height2)
         width (min width1 width2)]
-    [(crop img1 height width) (crop img2 height width)]))
+    [(scale-image 0 img1 height width) (scale-image 0 img2 height width)]))
         
 
 (defn px-dist [px1 px2 px1x px1y px2x px2y]
